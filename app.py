@@ -1,3 +1,3 @@
 import gradio as gr
-
-gr.Interface.load("models/segmind/SSD-1B").launch()
+import os
+gr.Interface.load("models/segmind/SSD-1B", api_key=os.environ.get("HF_TOKEN")).launch()
