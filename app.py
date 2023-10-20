@@ -182,21 +182,21 @@ with gr.Blocks(css="style.css") as demo:
             value=0,
         )
         randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
-        with gr.Row():
-            width = gr.Slider(
-                label="Width",
-                minimum=256,
-                maximum=MAX_IMAGE_SIZE,
-                step=32,
-                value=1024,
-            )
-            height = gr.Slider(
-                label="Height",
-                minimum=256,
-                maximum=MAX_IMAGE_SIZE,
-                step=32,
-                value=1024,
-            )
+        # with gr.Row():
+        #     width = gr.Slider(
+        #         label="Width",
+        #         minimum=256,
+        #         maximum=MAX_IMAGE_SIZE,
+        #         step=32,
+        #         value=1024,
+        #     )
+        #     height = gr.Slider(
+        #         label="Height",
+        #         minimum=256,
+        #         maximum=MAX_IMAGE_SIZE,
+        #         step=32,
+        #         value=1024,
+        #     )
         apply_refiner = gr.Checkbox(label="Apply refiner", value=False, visible=ENABLE_REFINER)
         with gr.Row():
             guidance_scale_base = gr.Slider(
@@ -290,8 +290,10 @@ with gr.Blocks(css="style.css") as demo:
             use_prompt_2,
             use_negative_prompt_2,
             seed,
-            width,
-            height,
+            1024,
+            1024,
+            # width,
+            # height,
             guidance_scale_base,
             guidance_scale_refiner,
             num_inference_steps_base,
