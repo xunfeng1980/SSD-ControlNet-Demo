@@ -11,7 +11,7 @@ import PIL.Image
 import torch
 from diffusers import AutoencoderKL, DiffusionPipeline
 
-DESCRIPTION = "# SD-XL"
+DESCRIPTION = "# Segmind Stable Diffusion"
 if not torch.cuda.is_available():
     DESCRIPTION += "\n<p>Running on CPU 🥶 This demo does not work on CPU.</p>"
 
