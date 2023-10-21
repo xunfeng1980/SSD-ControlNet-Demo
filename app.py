@@ -11,7 +11,7 @@ import PIL.Image
 import torch
 from diffusers import AutoencoderKL, StableDiffusionXLPipeline
 
-DESCRIPTION = "# Segmind Stable Diffusion"
+DESCRIPTION = "# Segmind Stable Diffusion: SSD-1B"
 if not torch.cuda.is_available():
     DESCRIPTION += "\n<p>Running on CPU 🥶 This demo does not work on CPU.</p>"
 
@@ -49,11 +49,13 @@ if torch.cuda.is_available():
         pipe.to(device)
         if ENABLE_REFINER:
             refiner.to(device)
+        print("Loaded on Device!")
 
     if USE_TORCH_COMPILE:
         pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
         if ENABLE_REFINER:
             refiner.unet = torch.compile(refiner.unet, mode="reduce-overhead", fullgraph=True)
+        print("Model Compiled!")
 
 
 def randomize_seed_fn(seed: int, randomize_seed: bool) -> int:
