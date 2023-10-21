@@ -9,7 +9,7 @@ import gradio as gr
 import numpy as np
 import PIL.Image
 import torch
-from diffusers import AutoencoderKL, DiffusionPipeline
+from diffusers import AutoencoderKL, StableDiffusionXLPipeline
 
 DESCRIPTION = "# Segmind Stable Diffusion"
 if not torch.cuda.is_available():
@@ -18,14 +18,14 @@ if not torch.cuda.is_available():
 MAX_SEED = np.iinfo(np.int32).max
 CACHE_EXAMPLES = torch.cuda.is_available() and os.getenv("CACHE_EXAMPLES") == "1"
 MAX_IMAGE_SIZE = int(os.getenv("MAX_IMAGE_SIZE", "1024"))
-USE_TORCH_COMPILE = os.getenv("USE_TORCH_COMPILE", "0") == "1"
+USE_TORCH_COMPILE = os.getenv("USE_TORCH_COMPILE", "1") == "1"
 ENABLE_CPU_OFFLOAD = os.getenv("ENABLE_CPU_OFFLOAD", "0") == "1"
 ENABLE_REFINER = os.getenv("ENABLE_REFINER", "0") == "1"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 if torch.cuda.is_available():
     vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
-    pipe = DiffusionPipeline.from_pretrained(
+    pipe = StableDiffusionXLPipeline.from_pretrained(
         "segmind/SSD-1B",
         vae=vae,
         torch_dtype=torch.float16,
