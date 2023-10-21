@@ -203,7 +203,7 @@ with gr.Blocks(css="style.css") as demo:
                 minimum=1,
                 maximum=20,
                 step=0.1,
-                value=5.0,
+                value=9.0,
             )
             num_inference_steps_base = gr.Slider(
                 label="Number of inference steps for base",
