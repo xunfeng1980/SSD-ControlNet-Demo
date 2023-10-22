@@ -86,7 +86,7 @@ def generate(
     apply_refiner: bool = False,
     randomize_seed: bool = False,
     progress = gr.Progress(track_tqdm=True)
-) -> PIL.Image.Image:
+):
     seed = randomize_seed_fn(seed, randomize_seed)
     generator = torch.Generator().manual_seed(seed)
 
