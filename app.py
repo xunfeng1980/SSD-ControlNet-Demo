@@ -135,7 +135,8 @@ def generate(
         ).images[0]
     
     image_path = save_image(image)
-    return gr.Gallery(value=[image_path], selected_index=0), seed
+    print(image_path)
+    return [image_path], seed
 
 
 examples = ['3d digital art of an adorable ghost, glowing within, holding a heart shaped pumpkin, Halloween, super cute, spooky haunted house background', 'beautiful lady, freckles, big smile, blue eyes, short ginger hair, dark makeup, wearing a floral blue vest top, soft light, dark grey background', 'professional portrait photo of an anthropomorphic cat wearing fancy gentleman hat and jacket walking in autumn forest.', 'an astronaut sitting in a diner, eating fries, cinematic, analog film', 'Albert Einstein in a surrealist Cyberpunk 2077 world, hyperrealistic', 'cinematic film still of Futuristic hero with golden dark armour with machine gun,  muscular body']
