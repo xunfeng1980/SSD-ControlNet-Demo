@@ -158,7 +158,7 @@ with gr.Blocks(css="style.css") as demo:
                 container=False,
             )
             run_button = gr.Button("Run", scale=0)
-        result = gr.Gallery(label="Result", show_label=False)
+        result = gr.Gallery(label="Result", columns=1, show_label=False)
     with gr.Accordion("Advanced options", open=False):
         with gr.Row():
             use_negative_prompt = gr.Checkbox(label="Use negative prompt", value=False)
