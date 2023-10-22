@@ -10,6 +10,7 @@ import numpy as np
 import PIL.Image
 import torch
 from diffusers import AutoencoderKL, StableDiffusionXLPipeline
+import uuid
 
 DESCRIPTION = "# Segmind Stable Diffusion: SSD-1B"
 if not torch.cuda.is_available():
@@ -57,12 +58,15 @@ if torch.cuda.is_available():
             refiner.unet = torch.compile(refiner.unet, mode="reduce-overhead", fullgraph=True)
         print("Model Compiled!")
 
+def save_image(img):
+    unique_name = str(uuid.uuid4()) + '.png'
+    img.save(unique_name)
+    return unique_name
 
 def randomize_seed_fn(seed: int, randomize_seed: bool) -> int:
     if randomize_seed:
         seed = random.randint(0, MAX_SEED)
     return seed
-
 
 def generate(
     prompt: str,
@@ -80,7 +84,10 @@ def generate(
     num_inference_steps_base: int = 25,
     num_inference_steps_refiner: int = 25,
     apply_refiner: bool = False,
+    randomize_seed: bool = False,
+    progress = gr.Progress(track_tqdm=True)
 ) -> PIL.Image.Image:
+    seed = randomize_seed_fn(seed, randomize_seed)
     generator = torch.Generator().manual_seed(seed)
 
     if not use_negative_prompt:
@@ -91,7 +98,7 @@ def generate(
         negative_prompt_2 = None  # type: ignore
 
     if not apply_refiner:
-        return pipe(
+        image = pipe(
             prompt=prompt,
             negative_prompt=negative_prompt,
             prompt_2=prompt_2,
@@ -126,7 +133,9 @@ def generate(
             image=latents,
             generator=generator,
         ).images[0]
-        return image
+    
+    image_path = save_image(image)
+    return image_path
 
 
 examples = ['3d digital art of an adorable ghost, glowing within, holding a heart shaped pumpkin, Halloween, super cute, spooky haunted house background', 'beautiful lady, freckles, big smile, blue eyes, short ginger hair, dark makeup, wearing a floral blue vest top, soft light, dark grey background', 'professional portrait photo of an anthropomorphic cat wearing fancy gentleman hat and jacket walking in autumn forest.', 'an astronaut sitting in a diner, eating fries, cinematic, analog film', 'Albert Einstein in a surrealist Cyberpunk 2077 world, hyperrealistic', 'cinematic film still of Futuristic hero with golden dark armour with machine gun,  muscular body']
@@ -172,7 +181,6 @@ with gr.Blocks(css="style.css") as demo:
             placeholder="Enter a negative prompt",
             visible=False,
         )
-
         seed = gr.Slider(
             label="Seed",
             minimum=0,
@@ -273,12 +281,6 @@ with gr.Blocks(css="style.css") as demo:
             negative_prompt_2.submit,
             run_button.click,
         ],
-        fn=randomize_seed_fn,
-        inputs=[seed, randomize_seed],
-        outputs=seed,
-        queue=False,
-        api_name=False,
-    ).then(
         fn=generate,
         inputs=[
             prompt,
@@ -296,6 +298,7 @@ with gr.Blocks(css="style.css") as demo:
             num_inference_steps_base,
             num_inference_steps_refiner,
             apply_refiner,
+            randomize_seed
         ],
         outputs=result,
         api_name="run",
