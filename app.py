@@ -84,7 +84,7 @@ def generate(
     generator = torch.Generator().manual_seed(seed)
 
     if not use_negative_prompt:
-        negative_prompt = None  # type: ignore
+        negative_prompt = "cartoon, painting, blurry, ugly"  # type: default prompt
     if not use_prompt_2:
         prompt_2 = None  # type: ignore
     if not use_negative_prompt_2:
@@ -210,7 +210,7 @@ with gr.Blocks(css="style.css") as demo:
                 minimum=10,
                 maximum=100,
                 step=1,
-                value=25,
+                value=20,
             )
         with gr.Row(visible=False) as refiner_params:
             guidance_scale_refiner = gr.Slider(
@@ -289,8 +289,6 @@ with gr.Blocks(css="style.css") as demo:
             use_prompt_2,
             use_negative_prompt_2,
             seed,
-            # 1024,
-            # 1024,
             width,
             height,
             guidance_scale_base,
