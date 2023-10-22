@@ -135,7 +135,7 @@ def generate(
         ).images[0]
     
     image_path = save_image(image)
-    return image_path
+    return gr.Gallery(value=[image_path], selected_index=0), seed
 
 
 examples = ['3d digital art of an adorable ghost, glowing within, holding a heart shaped pumpkin, Halloween, super cute, spooky haunted house background', 'beautiful lady, freckles, big smile, blue eyes, short ginger hair, dark makeup, wearing a floral blue vest top, soft light, dark grey background', 'professional portrait photo of an anthropomorphic cat wearing fancy gentleman hat and jacket walking in autumn forest.', 'an astronaut sitting in a diner, eating fries, cinematic, analog film', 'Albert Einstein in a surrealist Cyberpunk 2077 world, hyperrealistic', 'cinematic film still of Futuristic hero with golden dark armour with machine gun,  muscular body']
@@ -157,7 +157,7 @@ with gr.Blocks(css="style.css") as demo:
                 container=False,
             )
             run_button = gr.Button("Run", scale=0)
-        result = gr.Image(label="Result", show_label=False)
+        result = gr.Gallery(label="Result", show_label=False)
     with gr.Accordion("Advanced options", open=False):
         with gr.Row():
             use_negative_prompt = gr.Checkbox(label="Use negative prompt", value=False)
@@ -300,7 +300,7 @@ with gr.Blocks(css="style.css") as demo:
             apply_refiner,
             randomize_seed
         ],
-        outputs=result,
+        outputs=[result, seed],
         api_name="run",
     )
 
