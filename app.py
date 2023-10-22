@@ -210,7 +210,7 @@ with gr.Blocks(css="style.css") as demo:
                 minimum=10,
                 maximum=100,
                 step=1,
-                value=20,
+                value=25,
             )
         with gr.Row(visible=False) as refiner_params:
             guidance_scale_refiner = gr.Slider(
