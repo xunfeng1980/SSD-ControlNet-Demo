@@ -84,7 +84,7 @@ def generate(
     generator = torch.Generator().manual_seed(seed)
 
     if not use_negative_prompt:
-        negative_prompt = "cartoon, painting, blurry, ugly"  # type: default prompt
+        negative_prompt = None  # type: ignore
     if not use_prompt_2:
         prompt_2 = None  # type: ignore
     if not use_negative_prompt_2:
