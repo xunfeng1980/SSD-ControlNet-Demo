@@ -12,7 +12,9 @@ import torch
 from diffusers import AutoencoderKL, StableDiffusionXLPipeline
 import uuid
 
-DESCRIPTION = "# Segmind Stable Diffusion: SSD-1B"
+DESCRIPTION = '''# Segmind Stable Diffusion: SSD-1B
+#### [Segmind's SSD-1B](https://huggingface.co/segmind/SSD-1B) is a distilled, 50% smaller version of SDXL, offering up to 60% speedup
+'''
 if not torch.cuda.is_available():
     DESCRIPTION += "\n<p>Running on CPU 🥶 This demo does not work on CPU.</p>"
 
