@@ -87,6 +87,8 @@ DEFAULT_STYLE_NAME = "Cinematic"
 
 def apply_style(style_name: str, positive: str, negative: str = "") -> Tuple[str, str]:
     p, n = styles.get(style_name, styles[DEFAULT_STYLE_NAME])
+    if not negative:
+        negative = ""
     return p.replace("{prompt}", positive), n + negative
 
 
@@ -163,7 +165,7 @@ def generate(
         prompt_2 = None  # type: ignore
     if not use_negative_prompt_2:
         negative_prompt_2 = None  # type: ignore
-    prompt, negative_prompt = apply_refiner(style, prompt, negative_prompt)
+    prompt, negative_prompt = apply_style(style, prompt, negative_prompt)
     if not apply_refiner:
         image = pipe(
             prompt=prompt,
