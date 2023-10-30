@@ -26,6 +26,70 @@ ENABLE_CPU_OFFLOAD = os.getenv("ENABLE_CPU_OFFLOAD", "0") == "1"
 ENABLE_REFINER = os.getenv("ENABLE_REFINER", "0") == "1"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+style_list = [
+    {
+        "name": "(No style)",
+        "prompt": "{prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Cinematic",
+        "prompt": "cinematic still {prompt} . emotional, harmonious, vignette, highly detailed, high budget, bokeh, cinemascope, moody, epic, gorgeous, film grain, grainy",
+        "negative_prompt": "anime, cartoon, graphic, text, painting, crayon, graphite, abstract, glitch, deformed, mutated, ugly, disfigured",
+    },
+    {
+        "name": "Photographic",
+        "prompt": "cinematic photo {prompt} . 35mm photograph, film, bokeh, professional, 4k, highly detailed",
+        "negative_prompt": "drawing, painting, crayon, sketch, graphite, impressionist, noisy, blurry, soft, deformed, ugly",
+    },
+    {
+        "name": "Anime",
+        "prompt": "anime artwork {prompt} . anime style, key visual, vibrant, studio anime,  highly detailed",
+        "negative_prompt": "photo, deformed, black and white, realism, disfigured, low contrast",
+    },
+    {
+        "name": "Manga",
+        "prompt": "manga style {prompt} . vibrant, high-energy, detailed, iconic, Japanese comic style",
+        "negative_prompt": "ugly, deformed, noisy, blurry, low contrast, realism, photorealistic, Western comic style",
+    },
+    {
+        "name": "Digital Art",
+        "prompt": "concept art {prompt} . digital artwork, illustrative, painterly, matte painting, highly detailed",
+        "negative_prompt": "photo, photorealistic, realism, ugly",
+    },
+    {
+        "name": "Pixel art",
+        "prompt": "pixel-art {prompt} . low-res, blocky, pixel art style, 8-bit graphics",
+        "negative_prompt": "sloppy, messy, blurry, noisy, highly detailed, ultra textured, photo, realistic",
+    },
+    {
+        "name": "Fantasy art",
+        "prompt": "ethereal fantasy concept art of  {prompt} . magnificent, celestial, ethereal, painterly, epic, majestic, magical, fantasy art, cover art, dreamy",
+        "negative_prompt": "photographic, realistic, realism, 35mm film, dslr, cropped, frame, text, deformed, glitch, noise, noisy, off-center, deformed, cross-eyed, closed eyes, bad anatomy, ugly, disfigured, sloppy, duplicate, mutated, black and white",
+    },
+    {
+        "name": "Neonpunk",
+        "prompt": "neonpunk style {prompt} . cyberpunk, vaporwave, neon, vibes, vibrant, stunningly beautiful, crisp, detailed, sleek, ultramodern, magenta highlights, dark purple shadows, high contrast, cinematic, ultra detailed, intricate, professional",
+        "negative_prompt": "painting, drawing, illustration, glitch, deformed, mutated, cross-eyed, ugly, disfigured",
+    },
+    {
+        "name": "3D Model",
+        "prompt": "professional 3d model {prompt} . octane render, highly detailed, volumetric, dramatic lighting",
+        "negative_prompt": "ugly, deformed, noisy, low poly, blurry, painting",
+    },
+]
+
+styles = {k["name"]: (k["prompt"], k["negative_prompt"]) for k in style_list}
+STYLE_NAMES = list(styles.keys())
+DEFAULT_STYLE_NAME = "Cinematic"
+
+
+def apply_style(style_name: str, positive: str, negative: str = "") -> Tuple[str, str]:
+    p, n = styles.get(style_name, styles[DEFAULT_STYLE_NAME])
+    return p.replace("{prompt}", positive), n + negative
+
+
 if torch.cuda.is_available():
     vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16)
     pipe = StableDiffusionXLPipeline.from_pretrained(
@@ -73,6 +137,7 @@ def randomize_seed_fn(seed: int, randomize_seed: bool) -> int:
 def generate(
     prompt: str,
     negative_prompt: str = "",
+    style: str = DEFAULT_STYLE_NAME,
     prompt_2: str = "",
     negative_prompt_2: str = "",
     use_negative_prompt: bool = False,
@@ -98,7 +163,7 @@ def generate(
         prompt_2 = None  # type: ignore
     if not use_negative_prompt_2:
         negative_prompt_2 = None  # type: ignore
-
+    prompt, negative_prompt = apply_refiner(style, prompt, negative_prompt)
     if not apply_refiner:
         image = pipe(
             prompt=prompt,
@@ -166,6 +231,12 @@ with gr.Blocks(css="style.css") as demo:
             use_negative_prompt = gr.Checkbox(label="Use negative prompt", value=False)
             use_prompt_2 = gr.Checkbox(label="Use prompt 2", value=False)
             use_negative_prompt_2 = gr.Checkbox(label="Use negative prompt 2", value=False)
+        style_selection = gr.Radio(
+                               show_label=True, container=True, interactive=True,
+                               choices=STYLE_NAMES,
+                               value=DEFAULT_STYLE_NAME,
+                               label='Image Style'
+             )
         negative_prompt = gr.Text(
             label="Negative prompt",
             max_lines=1,
@@ -288,6 +359,7 @@ with gr.Blocks(css="style.css") as demo:
         inputs=[
             prompt,
             negative_prompt,
+            style_selection,
             prompt_2,
             negative_prompt_2,
             use_negative_prompt,
