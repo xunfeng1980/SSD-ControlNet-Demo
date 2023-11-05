@@ -10,3 +10,6 @@ pinned: false
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
+## Add controlnet support,fork form https://huggingface.co/spaces/segmind/Segmind-Stable-Diffusion/tree/main
+<img src="./demo/1.jpg">
